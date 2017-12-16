@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BakingApp</string>
+    <string name="appwidget_text">Start some baking?</string>
+
+
+    <string name="voila">Voila?</string>
+    <string name="next">Next</string>
+    <string name="previous">Prev</string>
+
+</resources>
