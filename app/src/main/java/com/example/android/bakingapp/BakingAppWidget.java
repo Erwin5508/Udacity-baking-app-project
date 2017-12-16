@@ -36,15 +36,15 @@ public class BakingAppWidget extends AppWidgetProvider {
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
         int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
         // TODO -------------------- What to do for different screen sizes --------------------
-        if (width < 10) { //   1){//
+        if (width < 10 || JsonInfoUtils.RECIPE_NAMES == null) { //   1){//
             // raw view
             views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
-            views.setTextViewText(R.id.widget_list_recipes, widgetText);
+            views.setTextViewText(R.id.appwidget_text, widgetText);
 
             Intent intent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-            views.setOnClickPendingIntent(R.id.widget_list_recipes, pendingIntent);
+            views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
         } else {
             // recipes list + ingredients text
             views = getRecipeListView(context);
@@ -85,8 +85,8 @@ public class BakingAppWidget extends AppWidgetProvider {
         intent.putStringArrayListExtra("ingredients", dataIngredients);
         views.setRemoteAdapter(R.id.widget_list_recipes, intent);
 
-        Log.e("titles", "getRecipeListView: " + dataList.toString());
-        Log.e("ingredients", "getRecipeListView: " + dataIngredients.toString());
+        Log.d("titles", "getRecipeListView: " + dataList.toString());
+        Log.d("ingredients", "getRecipeListView: " + dataIngredients.toString());
 
         return views;
     }
@@ -116,6 +116,7 @@ public class BakingAppWidget extends AppWidgetProvider {
     }
 
     public static void makeData() {
+        if (JsonInfoUtils.RECIPE_NAMES == null) return;
         mDataTitles = JsonInfoUtils.RECIPE_NAMES;
         String[] data = new String[JsonInfoUtils.RECIPE_NAMES.length];
         for (int i = 0; i < JsonInfoUtils.RECIPE_NAMES.length; i++){
