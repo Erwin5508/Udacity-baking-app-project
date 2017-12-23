@@ -1,17 +1,14 @@
 package com.example.android.bakingapp;
 
 import android.annotation.TargetApi;
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
-
-import java.util.ArrayList;
 
 /**
  * Implementation of App Widget functionality.
@@ -25,37 +22,32 @@ public class BakingAppWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        String widgetText = "Wanabake?";
-
-        makeData();
+        //String widgetText = "Wanabake?";
 
         // Construct the RemoteViews object
         RemoteViews views;
 
 
-        Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-        int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
+        //Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+        //int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
         // TODO -------------------- What to do for different screen sizes --------------------
-        if (width < 10 || JsonInfoUtils.RECIPE_NAMES == null) { //   1){//
-            // raw view
-            views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
-            views.setTextViewText(R.id.appwidget_text, widgetText);
-
-            Intent intent = new Intent(context, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-            views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
-        } else {
+//        if (width > 0 || JsonInfoUtils.RECIPE_NAMES == null) { //   1){//
+//            // raw view
+//            views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
+//            views.setTextViewText(R.id.appwidget_text, widgetText);
+//
+//            Intent intent = new Intent(context, MainActivity.class);
+//            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+//
+//            views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
+//        } else {
+            //makeFakeData();
             // recipes list + ingredients text
+
             views = getRecipeListView(context);
 
             // views.setRemoteAdapter(R.id.widget_ingredients, );
-        }
-
-        if (JsonInfoUtils.RECIPE_NAMES != null) {
-
-
-        }
+        //}
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -67,34 +59,36 @@ public class BakingAppWidget extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     private static RemoteViews getRecipeListView(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_list_view);
 
-        Intent intent = new Intent(context, ListWidgetService.class);
-        ArrayList<String> dataList = new ArrayList<>(mDataTitles.length);
-        ArrayList<String> dataIngredients = new ArrayList<>(mDataTitles.length);
+//        Intent intent = new Intent(context, WidgetService.class);
+//        ArrayList<String> dataList = new ArrayList<>(mDataTitles.length);
+//        ArrayList<String> dataIngredients = new ArrayList<>(mDataTitles.length);
+//
+//        for (int i = 0; i<mDataTitles.length; i++) {
+//            dataList.add(mDataTitles[i]);
+//            dataIngredients.add(mDataIngredients[i]);
+//        }
+//
+//        Log.d("titles", "getRecipeListView: " + dataList.toString());
+//        Log.d("ingredients", "getRecipeListView: " + dataIngredients.toString());
+//
+//        intent.putStringArrayListExtra("titles", dataList);
+//        intent.putStringArrayListExtra("ingredients", dataIngredients);
 
-        for (int i = 0; i<mDataTitles.length; i++) {
-            dataList.add(mDataTitles[i]);
-            dataIngredients.add(mDataIngredients[i]);
+        //views.setRemoteAdapter(R.id.widget_list_recipes, intent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            setRemoteAdapter(context, views);
+        } else {
+            setRemoteAdapterV11(context, views);
         }
 
-        intent.putStringArrayListExtra("titles", dataList);
-        intent.putStringArrayListExtra("ingredients", dataIngredients);
-        views.setRemoteAdapter(R.id.widget_list_recipes, intent);
-
-        Log.d("titles", "getRecipeListView: " + dataList.toString());
-        Log.d("ingredients", "getRecipeListView: " + dataIngredients.toString());
-
         return views;
-    }
-
-    public static PendingIntent buildRecipyShowIngredientsPendingIntent(Context context) {
-        Intent intent = new Intent();
-        //intent.setAction("")
-        return null;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -115,6 +109,23 @@ public class BakingAppWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private static void setRemoteAdapter(Context context, @NonNull final RemoteViews views) {
+        views.setRemoteAdapter(R.id.widget_list_recipes,
+                new Intent(context, WidgetService.class));
+    }
+
+    /**
+     * Sets the remote adapter used to fill in the list items
+     *
+     * @param views RemoteViews to set the RemoteAdapter
+     */
+    @SuppressWarnings("deprecation")
+    private static void setRemoteAdapterV11(Context context, @NonNull final RemoteViews views) {
+        views.setRemoteAdapter(0, R.id.widget_list_recipes,
+                new Intent(context, WidgetService.class));
+    }
+
     public static void makeData() {
         if (JsonInfoUtils.RECIPE_NAMES == null) return;
         mDataTitles = JsonInfoUtils.RECIPE_NAMES;
@@ -127,5 +138,15 @@ public class BakingAppWidget extends AppWidgetProvider {
             data[i] = string.toString();
         }
         mDataIngredients = data;
+    }
+
+    private static void makeFakeData() {
+        int n = 6;
+        mDataTitles = new String[n];
+        mDataIngredients = new String[n];
+        for (int i = 0; i < n; i++) {
+            mDataTitles[i] = "title: " + i;
+            mDataIngredients[i] = "ingredients: " + i;
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 /**
@@ -18,13 +19,12 @@ public class WidgetIntentReceiver extends BroadcastReceiver {
             String ingredients = bundle.getString("ingredients");
             startActionUpdateIngredients(context, ingredients);
         }
+        Log.w("WidgetIntentReceiver", "WidgetIntentReceiver called..");
 
     }
 
     private void startActionUpdateIngredients(Context context, String ingredients) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_list_view);
         remoteViews.setTextViewText(R.id.widget_ingredients, ingredients);
-        remoteViews.setOnClickPendingIntent(R.id.widget_list_recipes,
-                BakingAppWidget.buildRecipyShowIngredientsPendingIntent(context));
     }
 }
