@@ -10,13 +10,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
+import java.util.ArrayList;
+
 /**
  * Implementation of App Widget functionality.
  */
 public class BakingAppWidget extends AppWidgetProvider {
 
+    private final String TAG = "BakingAppWidget";
+    static int index = -1;
     static String[] mDataTitles;
     static String[] mDataIngredients;
+
+    private static AppWidgetManager mAppWidgetManager;
+    private static int mAppWidgetId;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
@@ -41,7 +48,7 @@ public class BakingAppWidget extends AppWidgetProvider {
 //
 //            views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
 //        } else {
-            //makeFakeData();
+            makeFakeData();
             // recipes list + ingredients text
 
             views = getRecipeListView(context);
@@ -49,7 +56,9 @@ public class BakingAppWidget extends AppWidgetProvider {
             // views.setRemoteAdapter(R.id.widget_ingredients, );
         //}
 
-        // Instruct the widget manager to update the widget
+
+        mAppWidgetId = appWidgetId;
+                // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
@@ -59,28 +68,34 @@ public class BakingAppWidget extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+        mAppWidgetManager = appWidgetManager;
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     private static RemoteViews getRecipeListView(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_list_view);
 
-//        Intent intent = new Intent(context, WidgetService.class);
-//        ArrayList<String> dataList = new ArrayList<>(mDataTitles.length);
-//        ArrayList<String> dataIngredients = new ArrayList<>(mDataTitles.length);
-//
-//        for (int i = 0; i<mDataTitles.length; i++) {
-//            dataList.add(mDataTitles[i]);
-//            dataIngredients.add(mDataIngredients[i]);
-//        }
-//
-//        Log.d("titles", "getRecipeListView: " + dataList.toString());
-//        Log.d("ingredients", "getRecipeListView: " + dataIngredients.toString());
-//
-//        intent.putStringArrayListExtra("titles", dataList);
-//        intent.putStringArrayListExtra("ingredients", dataIngredients);
+        if (index != -1) {
+            views.setTextViewText(R.id.widget_ingredients, mDataIngredients[index]);
+        }
+        Intent intent = new Intent(context, WidgetService.class);
+        ArrayList<String> dataList = new ArrayList<>(mDataTitles.length);
+        ArrayList<String> dataIngredients = new ArrayList<>(mDataTitles.length);
+
+        for (int i = 0; i<mDataTitles.length; i++) {
+            dataList.add(mDataTitles[i]);
+            dataIngredients.add(mDataIngredients[i]);
+        }
+
+        //Log.d("titles", "getRecipeListView: " + dataList.toString());
+        //Log.d("ingredients", "getRecipeListView: " + dataIngredients.toString());
+
+        intent.putStringArrayListExtra("titles", dataList);
+        intent.putStringArrayListExtra("ingredients", dataIngredients);
 
         //views.setRemoteAdapter(R.id.widget_list_recipes, intent);
+
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             setRemoteAdapter(context, views);
@@ -89,6 +104,11 @@ public class BakingAppWidget extends AppWidgetProvider {
         }
 
         return views;
+    }
+
+    public static void updateIngredients(int i) {
+        index = i;
+        mAppWidgetManager.notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.widget_ingredients);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

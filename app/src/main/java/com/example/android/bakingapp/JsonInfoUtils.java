@@ -140,6 +140,37 @@ public class JsonInfoUtils {
         }
     }
 
+//    public void makeIngredientsData() {
+//        if (JsonInfoUtils.RECIPE_NAMES == null) return;
+//
+//        Cursor ingredientsCursor;
+//
+//        // call the db
+//        ingredientsCursor = IngredientsContentProvider.
+//
+//        // delete everything
+//        try {
+//            Uri uri = IngredientsContract.IngredientsEntry.CONTENT_URI;
+//            getContentResolver().delete(uri, null, null);
+//
+//        } catch (Exception e) {
+//        }
+//
+//        // re add all the data
+//        String[] dataTitles = JsonInfoUtils.RECIPE_NAMES;
+//        String[] data = new String[JsonInfoUtils.RECIPE_NAMES.length];
+//        for (int i = 0; i < JsonInfoUtils.RECIPE_NAMES.length; i++){
+//            StringBuilder string = new StringBuilder();
+//            for (int j = 0; j < JsonInfoUtils.INGREDIENTS_lengths[i]; j++) {
+//                string.append("\n" + JsonInfoUtils.INGREDIENTS[i][j]);
+//            }
+//            data[i] = string.toString();
+//        }
+//        String[] dataIngredients = data;
+//
+//
+//    }
+
     public static void saveIndex(int index) {
         mIndex = index;
     }

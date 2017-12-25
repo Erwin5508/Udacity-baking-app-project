@@ -44,6 +44,9 @@
         </receiver>
 
 
+        <service android:name=".RecipeService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
         <service android:name=".WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 

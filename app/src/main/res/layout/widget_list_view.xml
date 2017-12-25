@@ -11,22 +11,17 @@
 
     <ListView
         android:id="@+id/widget_list_recipes"
-        android:layout_width="match_parent"
+        android:layout_width="150dp"
         android:layout_height="match_parent" />
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark" />
 
     <TextView
         android:id="@+id/widget_ingredients"
         android:text="Wanabake?"
-        android:layout_width="0dp"
+        android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:background="#09C"
-        android:textSize="20sp"
+        android:textSize="12sp"
         android:textStyle="bold|italic"/>
 
 </LinearLayout>
