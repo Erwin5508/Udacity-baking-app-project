@@ -65,7 +65,6 @@ public class IngredientsContentProvider extends ContentProvider {
         return retCursor;
     }
 
-
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
@@ -83,7 +82,7 @@ public class IngredientsContentProvider extends ContentProvider {
         switch (match) {
             case ALL_INGREDIENTS:
                 long id = db.insert(TABLE_NAME, null, values);
-                if (id < 0) {
+                if (id >= 0) {
                     returnUri = ContentUris.withAppendedId
                             (IngredientsContract.IngredientsEntry.CONTENT_URI, id);
                 } else {

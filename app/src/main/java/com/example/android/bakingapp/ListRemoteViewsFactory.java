@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import static com.example.android.bakingapp.BakingAppWidget.mCursor;
+
 public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final String TAG = "ListRemoteViewsFactory";
     private Context mContext;
-    private String[] mDataTitles;
-    private String[] mDataIngredients;
+    private static String[] mDataTitles;
+    private static String[] mDataIngredients;
 
     ListRemoteViewsFactory(Context applicationContext, Intent intent) {
         mContext = applicationContext;
@@ -18,12 +20,12 @@ public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public void onCreate() {
-        makeFakeData();
+        makeData(mContext);
     }
 
     @Override
     public void onDataSetChanged() {
-        makeFakeData();
+        makeData(mContext);
     }
 
     @Override
@@ -73,22 +75,39 @@ public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
         return true;
     }
 
-    public void makeData() {
-        if (JsonInfoUtils.RECIPE_NAMES == null) return;
-        mDataTitles = JsonInfoUtils.RECIPE_NAMES;
-        String[] data = new String[JsonInfoUtils.RECIPE_NAMES.length];
-        for (int i = 0; i < JsonInfoUtils.RECIPE_NAMES.length; i++){
-            StringBuilder string = new StringBuilder();
-            for (int j = 0; j < JsonInfoUtils.INGREDIENTS_lengths[i]; j++) {
-                string.append("\n" + JsonInfoUtils.INGREDIENTS[i][j]);
+    public static void makeData(Context context) {
+        try {
+            if (mCursor != null) mCursor.close();
+            mCursor = context.getContentResolver().query(
+                    IngredientsContract.IngredientsEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    IngredientsContract.IngredientsEntry._ID);
+            if (mCursor == null) {
+                makeFakeData();
+                mDataIngredients[0] = "Most likely no internet:\nNo data was loaded\n" +
+                        "Try restarting the App";
+                return;
             }
-            data[i] = string.toString();
+            int i = 0;
+            while (mCursor.moveToNext()) {
+                mDataTitles[i] = mCursor.getString(mCursor.getColumnIndex
+                        (IngredientsContract.IngredientsEntry.COLUMN_TITLES));
+                mDataIngredients[i] = mCursor.getString(mCursor.getColumnIndex
+                        (IngredientsContract.IngredientsEntry.COLUMN_INGREDIENTS));
+                i++;
+            }
+        } catch (Exception e) {
+            makeFakeData();
+            mDataIngredients[0] = e.toString();
+        } finally {
+            mCursor.close();
         }
-        mDataIngredients = data;
     }
 
-    private void makeFakeData() {
-        int n = 11;
+    private static void makeFakeData() {
+        int n = 4;
         mDataTitles = new String[n];
         mDataIngredients = new String[n];
         for (int i = 0; i < n; i++) {

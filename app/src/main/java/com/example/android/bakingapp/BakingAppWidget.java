@@ -30,16 +30,12 @@ public class BakingAppWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        //String widgetText = "Wanabake?";
+        makeData(context);
 
         // Construct the RemoteViews object
         RemoteViews views;
 
-
-        //Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-        //int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
-        // TODO -------------------- What to do for different screen sizes --------------------
-        if (mDataIngredients == null) { //   1){//
+        if (mDataIngredients == null) {
             // raw view
             views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
             views.setTextViewText(R.id.appwidget_text, "Wanabake");
@@ -49,24 +45,17 @@ public class BakingAppWidget extends AppWidgetProvider {
 
             views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
         } else {
-            makeData(context);
-            // recipes list + ingredients text
-
             views = getRecipeListView(context);
-
-            // views.setRemoteAdapter(R.id.widget_ingredients, );
         }
 
-
         mAppWidgetId = appWidgetId;
-                // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-        if (intent != null) {
+        if (intent != null && mDataIngredients != null) {
             index = intent.getIntExtra("i", -1);
             mgr.updateAppWidget(mAppWidgetId, getRecipeListView(context));
         }
@@ -119,14 +108,10 @@ public class BakingAppWidget extends AppWidgetProvider {
     }
 
     @Override
-    public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
-    }
+    public void onEnabled(Context context) {}
 
     @Override
-    public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
-    }
+    public void onDisabled(Context context) {}
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private static void setRemoteAdapter(Context context, @NonNull final RemoteViews views) {
@@ -171,12 +156,13 @@ public class BakingAppWidget extends AppWidgetProvider {
         } catch (Exception e) {
             makeFakeData();
             mDataIngredients[0] = e.toString();
+        } finally {
+            mCursor.close();
         }
-
     }
 
     private static void makeFakeData() {
-        int n = 11;
+        int n = 4;
         mDataTitles = new String[n];
         mDataIngredients = new String[n];
         for (int i = 0; i < n; i++) {

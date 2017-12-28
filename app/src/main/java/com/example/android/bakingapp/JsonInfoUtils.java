@@ -154,14 +154,6 @@ public class JsonInfoUtils {
 
         // call the db
         ContentResolver contentResolver = context.getContentResolver();
-//        IngredientsDbHelper db = new IngredientsDbHelper(mContext);
-//        SQLiteDatabase mDb = db.getWritableDatabase();
-//
-//        Cursor ingredientsCursor = contentResolver.query(IngredientsContract.IngredientsEntry.CONTENT_URI,
-//                null,
-//                null,
-//                null,
-//                IngredientsContract.IngredientsEntry._ID);
 
         // delete everything
         try {
@@ -178,13 +170,11 @@ public class JsonInfoUtils {
         for (int i = 0; i < JsonInfoUtils.RECIPE_NAMES.length; i++){
             StringBuilder string = new StringBuilder("Here is the ingredients you'll need:\n");
             for (int j = 0; j < JsonInfoUtils.INGREDIENTS_lengths[i]; j++) {
-                string.append("\n" + JsonInfoUtils.INGREDIENTS[i][j]);
+                string.append("\n* " + JsonInfoUtils.INGREDIENTS[i][j]);
             }
             dataIngredients[i] = string.toString();
         }
 
-        // TODO - java.lang.UnsupportedOperationException:
-        // TODO - Failed to insert row into content://com.example.android.bakingapp/all_ingredients
         // send the data to the database
         for (int i = 0; i < dataTitles.length; i++) {
             ContentValues cv = new ContentValues();
@@ -195,8 +185,6 @@ public class JsonInfoUtils {
                         (IngredientsContract.IngredientsEntry.CONTENT_URI, cv);
             }  catch (Exception e){
                 Log.e(TAG + "2", "Content resolver broke\n-----\n-----\n" + e.toString());
-            } finally {
-                // close all connections to the database
             }
         }
         // get the widget to load the new data

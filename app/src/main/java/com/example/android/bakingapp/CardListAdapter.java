@@ -30,9 +30,8 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardLi
     public CardListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutIdForListItem = R.layout.card_item;
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
+        View view = inflater.inflate(layoutIdForListItem, parent, false);
         return new CardListViewHolder(view);
     }
 
