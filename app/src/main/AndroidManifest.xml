@@ -44,11 +44,13 @@
         </receiver>
 
 
-        <service android:name=".RecipeService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
-
         <service android:name=".WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <provider
+            android:authorities="com.example.android.bakingapp"
+            android:name="com.example.android.bakingapp.IngredientsContentProvider"
+            android:exported="true"/>
 
     </application>
 

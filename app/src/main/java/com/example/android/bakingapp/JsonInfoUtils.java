@@ -1,6 +1,12 @@
 package com.example.android.bakingapp;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +18,7 @@ import org.json.JSONObject;
 
 public class JsonInfoUtils {
 
+    private static final String TAG = "JsonInfoUtils";
     public static String[] RECIPE_NAMES;
 
     public static String[][] INGREDIENTS;
@@ -30,10 +37,11 @@ public class JsonInfoUtils {
 
     public static int mIndex;
     public static boolean mSmallScreen = true;
+    private static Context mContext;
 
     public static String setUpTheJsonData(String Data, Context context) throws JSONException{
 
-
+        mContext = context;
 
         final String pathNames = "name";
         final String pathServings = "servings";
@@ -47,6 +55,7 @@ public class JsonInfoUtils {
         IMAGE_URL = lookThroughSimplePaths(results, pathImage);
         setINGREDIENTS(results);
         setSTEPS(results);
+        makeWidgetData(context);
 
         return "setUpTheJsonData() executed in it's entirety";
     }
@@ -140,36 +149,62 @@ public class JsonInfoUtils {
         }
     }
 
-//    public void makeIngredientsData() {
-//        if (JsonInfoUtils.RECIPE_NAMES == null) return;
+    public static void makeWidgetData(Context context) {
+        if (JsonInfoUtils.RECIPE_NAMES == null) return;
+
+        // call the db
+        ContentResolver contentResolver = context.getContentResolver();
+//        IngredientsDbHelper db = new IngredientsDbHelper(mContext);
+//        SQLiteDatabase mDb = db.getWritableDatabase();
 //
-//        Cursor ingredientsCursor;
-//
-//        // call the db
-//        ingredientsCursor = IngredientsContentProvider.
-//
-//        // delete everything
-//        try {
-//            Uri uri = IngredientsContract.IngredientsEntry.CONTENT_URI;
-//            getContentResolver().delete(uri, null, null);
-//
-//        } catch (Exception e) {
-//        }
-//
-//        // re add all the data
-//        String[] dataTitles = JsonInfoUtils.RECIPE_NAMES;
-//        String[] data = new String[JsonInfoUtils.RECIPE_NAMES.length];
-//        for (int i = 0; i < JsonInfoUtils.RECIPE_NAMES.length; i++){
-//            StringBuilder string = new StringBuilder();
-//            for (int j = 0; j < JsonInfoUtils.INGREDIENTS_lengths[i]; j++) {
-//                string.append("\n" + JsonInfoUtils.INGREDIENTS[i][j]);
-//            }
-//            data[i] = string.toString();
-//        }
-//        String[] dataIngredients = data;
-//
-//
-//    }
+//        Cursor ingredientsCursor = contentResolver.query(IngredientsContract.IngredientsEntry.CONTENT_URI,
+//                null,
+//                null,
+//                null,
+//                IngredientsContract.IngredientsEntry._ID);
+
+        // delete everything
+        try {
+            Uri uri = IngredientsContract.IngredientsEntry.CONTENT_URI;
+            contentResolver.delete(uri, null, null);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Content resolver broke\n-----\n-----\n" + e.toString());
+        }
+
+        // make the data
+        String[] dataTitles = JsonInfoUtils.RECIPE_NAMES;
+        String[] dataIngredients = new String[JsonInfoUtils.RECIPE_NAMES.length];
+        for (int i = 0; i < JsonInfoUtils.RECIPE_NAMES.length; i++){
+            StringBuilder string = new StringBuilder("Here is the ingredients you'll need:\n");
+            for (int j = 0; j < JsonInfoUtils.INGREDIENTS_lengths[i]; j++) {
+                string.append("\n" + JsonInfoUtils.INGREDIENTS[i][j]);
+            }
+            dataIngredients[i] = string.toString();
+        }
+
+        // TODO - java.lang.UnsupportedOperationException:
+        // TODO - Failed to insert row into content://com.example.android.bakingapp/all_ingredients
+        // send the data to the database
+        for (int i = 0; i < dataTitles.length; i++) {
+            ContentValues cv = new ContentValues();
+            cv.put(IngredientsContract.IngredientsEntry.COLUMN_TITLES, dataTitles[i]);
+            cv.put(IngredientsContract.IngredientsEntry.COLUMN_INGREDIENTS, dataIngredients[i]);
+            try {
+                contentResolver.insert
+                        (IngredientsContract.IngredientsEntry.CONTENT_URI, cv);
+            }  catch (Exception e){
+                Log.e(TAG + "2", "Content resolver broke\n-----\n-----\n" + e.toString());
+            } finally {
+                // close all connections to the database
+            }
+        }
+        // get the widget to load the new data
+        Intent intent = new Intent(context, BakingAppWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
+        context.sendBroadcast(intent);
+    }
 
     public static void saveIndex(int index) {
         mIndex = index;

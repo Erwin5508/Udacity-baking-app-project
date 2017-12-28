@@ -10,7 +10,7 @@ public class IngredientsDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ingredients.db";
 
-    private static final int DATABASE_VERSION = 0;
+    private static final int DATABASE_VERSION = 1;
 
     public IngredientsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -20,10 +20,10 @@ public class IngredientsDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         final String SQL_CREATE_INGREDIENTS_TABLE =
-                "CREATE TABLE" + IngredientsEntry.TABLE_NAME + " (" +
+                "CREATE TABLE " + IngredientsEntry.TABLE_NAME + " (" +
                         IngredientsEntry._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         IngredientsEntry.COLUMN_TITLES      + " TEXT NOT NULL, " +
-                        IngredientsEntry.COLUMN_INGREDIENTS + " TEXT NOT NULL, " + "); ";
+                        IngredientsEntry.COLUMN_INGREDIENTS + " TEXT NOT NULL " + "); ";
 
         db.execSQL(SQL_CREATE_INGREDIENTS_TABLE);
     }

@@ -41,13 +41,12 @@ public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
     public RemoteViews getViewAt(int position) {
         if(mDataTitles == null) return null;
         String title = mDataTitles[position];
-        String ingredients = mDataIngredients[position];
 
         RemoteViews view = new RemoteViews(mContext.getPackageName(),
                 android.R.layout.simple_list_item_1);
         view.setTextViewText(android.R.id.text1, title);
 
-        Intent fillInIntent = new Intent(mContext, WidgetService.class);
+        Intent fillInIntent = new Intent();
         fillInIntent.putExtra("i", position);
         view.setOnClickFillInIntent(android.R.id.text1, fillInIntent);
 

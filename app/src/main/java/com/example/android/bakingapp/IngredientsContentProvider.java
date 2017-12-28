@@ -22,15 +22,12 @@ public class IngredientsContentProvider extends ContentProvider {
     public static final UriMatcher sUriMatcher = buildUriMatcher();
 
     public static final int ALL_INGREDIENTS = 100;
-    public static final int INGREDIENTS_WITH_ID = 101;
 
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         uriMatcher.addURI(IngredientsContract.AUTHORITY,
                 IngredientsContract.PATH_TO_INGREDIENTS, ALL_INGREDIENTS);
-        uriMatcher.addURI(IngredientsContract.AUTHORITY,
-                IngredientsContract.PATH_TO_INGREDIENTS + "/#", INGREDIENTS_WITH_ID);
 
         return uriMatcher;
     }
@@ -57,20 +54,6 @@ public class IngredientsContentProvider extends ContentProvider {
                         projection,
                         selection,
                         selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
-                break;
-            case INGREDIENTS_WITH_ID:
-                String id = uri.getPathSegments().get(1);
-
-                String mSelection = "_id=?";
-                String[] mSelectionArgs = new String[]{id};
-
-                retCursor = db.query(TABLE_NAME,
-                        projection,
-                        mSelection,
-                        mSelectionArgs,
                         null,
                         null,
                         sortOrder);
@@ -124,11 +107,6 @@ public class IngredientsContentProvider extends ContentProvider {
         int tasksDeleted;
         switch (match) {
 
-            case INGREDIENTS_WITH_ID:
-                tasksDeleted = db.delete(TABLE_NAME,
-                        IngredientsContract.IngredientsEntry._ID + "=?",
-                        new String[]{selection});
-                break;
             case ALL_INGREDIENTS:
                 tasksDeleted = db.delete(TABLE_NAME, null, null);
                 break;

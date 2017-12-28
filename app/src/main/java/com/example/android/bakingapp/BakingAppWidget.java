@@ -1,16 +1,16 @@
 package com.example.android.bakingapp;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
-
-import java.util.ArrayList;
 
 /**
  * Implementation of App Widget functionality.
@@ -21,8 +21,9 @@ public class BakingAppWidget extends AppWidgetProvider {
     static int index = -1;
     static String[] mDataTitles;
     static String[] mDataIngredients;
+    static Cursor mCursor;
 
-    private static AppWidgetManager mAppWidgetManager;
+
     private static int mAppWidgetId;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -38,23 +39,23 @@ public class BakingAppWidget extends AppWidgetProvider {
         //Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
         //int width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
         // TODO -------------------- What to do for different screen sizes --------------------
-//        if (width > 0 || JsonInfoUtils.RECIPE_NAMES == null) { //   1){//
-//            // raw view
-//            views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
-//            views.setTextViewText(R.id.appwidget_text, widgetText);
-//
-//            Intent intent = new Intent(context, MainActivity.class);
-//            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-//
-//            views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
-//        } else {
-            makeFakeData();
+        if (mDataIngredients == null) { //   1){//
+            // raw view
+            views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
+            views.setTextViewText(R.id.appwidget_text, "Wanabake");
+
+            Intent intent = new Intent(context, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
+        } else {
+            makeData(context);
             // recipes list + ingredients text
 
             views = getRecipeListView(context);
 
             // views.setRemoteAdapter(R.id.widget_ingredients, );
-        //}
+        }
 
 
         mAppWidgetId = appWidgetId;
@@ -63,12 +64,21 @@ public class BakingAppWidget extends AppWidgetProvider {
     }
 
     @Override
+    public void onReceive(Context context, Intent intent) {
+        AppWidgetManager mgr = AppWidgetManager.getInstance(context);
+        if (intent != null) {
+            index = intent.getIntExtra("i", -1);
+            mgr.updateAppWidget(mAppWidgetId, getRecipeListView(context));
+        }
+        super.onReceive(context, intent);
+    }
+
+    @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
-        mAppWidgetManager = appWidgetManager;
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
@@ -76,26 +86,14 @@ public class BakingAppWidget extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_list_view);
 
         if (index != -1) {
-            views.setTextViewText(R.id.widget_ingredients, mDataIngredients[index]);
+            try {
+                views.setTextViewText(R.id.widget_ingredients, mDataIngredients[index]);
+            } catch (Exception e) {
+                String error = e.toString() + "\n\n" + "caused by this index: " + index +
+                        "\nAlthough max length of array is: " + mDataIngredients.length;
+                views.setTextViewText(R.id.widget_ingredients, error);
+            }
         }
-        Intent intent = new Intent(context, WidgetService.class);
-        ArrayList<String> dataList = new ArrayList<>(mDataTitles.length);
-        ArrayList<String> dataIngredients = new ArrayList<>(mDataTitles.length);
-
-        for (int i = 0; i<mDataTitles.length; i++) {
-            dataList.add(mDataTitles[i]);
-            dataIngredients.add(mDataIngredients[i]);
-        }
-
-        //Log.d("titles", "getRecipeListView: " + dataList.toString());
-        //Log.d("ingredients", "getRecipeListView: " + dataIngredients.toString());
-
-        intent.putStringArrayListExtra("titles", dataList);
-        intent.putStringArrayListExtra("ingredients", dataIngredients);
-
-        //views.setRemoteAdapter(R.id.widget_list_recipes, intent);
-
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             setRemoteAdapter(context, views);
@@ -103,12 +101,13 @@ public class BakingAppWidget extends AppWidgetProvider {
             setRemoteAdapterV11(context, views);
         }
 
-        return views;
-    }
+        Intent ingredientsIntent = new Intent(context, BakingAppWidget.class);
 
-    public static void updateIngredients(int i) {
-        index = i;
-        mAppWidgetManager.notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.widget_ingredients);
+        PendingIntent ingrePendingIntent = PendingIntent.getBroadcast(context, 0,
+                ingredientsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.widget_list_recipes, ingrePendingIntent);
+
+        return views;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -146,22 +145,38 @@ public class BakingAppWidget extends AppWidgetProvider {
                 new Intent(context, WidgetService.class));
     }
 
-    public static void makeData() {
-        if (JsonInfoUtils.RECIPE_NAMES == null) return;
-        mDataTitles = JsonInfoUtils.RECIPE_NAMES;
-        String[] data = new String[JsonInfoUtils.RECIPE_NAMES.length];
-        for (int i = 0; i < JsonInfoUtils.RECIPE_NAMES.length; i++){
-            StringBuilder string = new StringBuilder();
-            for (int j = 0; j < JsonInfoUtils.INGREDIENTS_lengths[i]; j++) {
-                string.append("\n" + JsonInfoUtils.INGREDIENTS[i][j]);
+    public static void makeData(Context context) {
+        try {
+            if (mCursor != null) mCursor.close();
+            mCursor = context.getContentResolver().query(
+                    IngredientsContract.IngredientsEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    IngredientsContract.IngredientsEntry._ID);
+            if (mCursor == null) {
+                makeFakeData();
+                mDataIngredients[0] = "Most likely no internet:\nNo data was loaded\n" +
+                        "Try restarting the App";
+                return;
             }
-            data[i] = string.toString();
+            int i = 0;
+            while (mCursor.moveToNext()) {
+                mDataTitles[i] = mCursor.getString(mCursor.getColumnIndex
+                        (IngredientsContract.IngredientsEntry.COLUMN_TITLES));
+                mDataIngredients[i] = mCursor.getString(mCursor.getColumnIndex
+                        (IngredientsContract.IngredientsEntry.COLUMN_INGREDIENTS));
+                i++;
+            }
+        } catch (Exception e) {
+            makeFakeData();
+            mDataIngredients[0] = e.toString();
         }
-        mDataIngredients = data;
+
     }
 
     private static void makeFakeData() {
-        int n = 6;
+        int n = 11;
         mDataTitles = new String[n];
         mDataIngredients = new String[n];
         for (int i = 0; i < n; i++) {
