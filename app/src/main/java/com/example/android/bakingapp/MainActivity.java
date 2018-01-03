@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         int duration = Toast.LENGTH_LONG;
 
         Toast toast = Toast.makeText(context, message, duration);
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setGravity(Gravity.BOTTOM, 0, 0);
 
         toast.show();
     }

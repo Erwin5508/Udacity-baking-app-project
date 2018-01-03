@@ -91,6 +91,9 @@ public class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFac
                 return;
             }
             int i = 0;
+            int size = mCursor.getCount();
+            mDataTitles = new String[size];
+            mDataIngredients = new String[size];
             while (mCursor.moveToNext()) {
                 mDataTitles[i] = mCursor.getString(mCursor.getColumnIndex
                         (IngredientsContract.IngredientsEntry.COLUMN_TITLES));

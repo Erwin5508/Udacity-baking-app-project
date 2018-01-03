@@ -9,14 +9,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
+
+//import static android.support.test.espresso.contrib.*;
 
 
 /**
@@ -41,9 +40,10 @@ public class BasicCheckContextTest {
     @Test
     public void checkIfRandomThingsDoStuff() {
 
-        onData(anything()).inAdapterView(withId(R.id.card_grid_view)).atPosition(1).check(matches(withText(JsonInfoUtils.RECIPE_NAMES[1])));
+        //onData(anything()).inAdapterView(withId(R.id.card_grid_view)).atPosition(1).check(matches(withText(JsonInfoUtils.RECIPE_NAMES[1])));
 
-        onData(anything()).inAdapterView(withId(R.id.card_grid_view)).atPosition(1).perform(click());
+        //onData(anything()).inAdapterView(withId(R.id.card_grid_view)).atPosition(1).perform(click());
+        //onView(withId(R.id.card_grid_view)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
 
         onView(withId(R.id.voila_text)).check(matches(withText(R.string.voila)));
 

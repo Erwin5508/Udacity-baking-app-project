@@ -80,7 +80,11 @@ public class DetailStepFragment extends Fragment {
             mPlayerPosition = savedInstanceState.getLong(PLAYER_SATE);
             mI = savedInstanceState.getInt("i");
             mIndex = savedInstanceState.getInt("index");
-            playWhenReady = !playWhenReady;
+            try {
+                playWhenReady = savedInstanceState.getBoolean(PLAY_WHEN_READY);
+            } catch (Exception e) {
+                // Not saved
+            }
             setIndex(mIndex, mI);
 
         } else {
@@ -144,14 +148,17 @@ public class DetailStepFragment extends Fragment {
                         .load(JsonInfoUtils.IMAGE_URL[mIndex])
                         .into(imageView);
                 imageView.setVisibility(View.VISIBLE);
-            } else {
+            } else if (!JsonInfoUtils.STEPS_THUMBNAIL_URL[mIndex][mI].equals("")){
+                Picasso.with(getContext())
+                        .load(JsonInfoUtils.STEPS_THUMBNAIL_URL[mIndex][mI])
+                        .into(imageView);
+                imageView.setVisibility(View.VISIBLE);
+            }else {
                 imageView.setVisibility(View.GONE);
             }
-            if (!JsonInfoUtils.STEPS_THUMBNAIL_URL[mIndex][mI].equals("")) {
-                initializePlayer(JsonInfoUtils.STEPS_THUMBNAIL_URL[mIndex][mI]);
-            } else {
-                initializePlayer(JsonInfoUtils.STEPS_VIDEO_URL[mIndex][mI]);
-            }
+
+            initializePlayer(JsonInfoUtils.STEPS_VIDEO_URL[mIndex][mI]);
+
         } catch (Exception e) {
             Toast.makeText(getContext(),
                     "Failed Initializing properly the player",
@@ -236,6 +243,7 @@ public class DetailStepFragment extends Fragment {
 
             savedInstanceState.putInt("index", mIndex);
             savedInstanceState.putInt("i", mI);
+            savedInstanceState.putBoolean(PLAY_WHEN_READY, playWhenReady);
         }
     }
 
@@ -248,7 +256,10 @@ public class DetailStepFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mExoPlayer != null) mPlayerPosition = mExoPlayer.getCurrentPosition();
+        if (mExoPlayer != null) {
+            mPlayerPosition = mExoPlayer.getCurrentPosition();
+            playWhenReady = mExoPlayer.getPlayWhenReady();
+        }
         releasePlayer();
     }
 
