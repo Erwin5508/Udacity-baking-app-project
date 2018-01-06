@@ -35,17 +35,18 @@ public class BakingAppWidget extends AppWidgetProvider {
         // Construct the RemoteViews object
         RemoteViews views;
 
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
         if (mDataIngredients == null) {
             // raw view
             views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
             views.setTextViewText(R.id.appwidget_text, "Wanabake");
 
-            Intent intent = new Intent(context, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
             views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
         } else {
             views = getRecipeListView(context);
+            views.setOnClickPendingIntent(R.id.widget_ingredients, pendingIntent);
         }
 
         mAppWidgetId = appWidgetId;
