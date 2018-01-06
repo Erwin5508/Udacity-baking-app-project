@@ -3,11 +3,12 @@ package com.example.android.bakingapp;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.widget.Toast;
 
 import java.net.URL;
@@ -78,12 +79,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public void toastMessage(String message) {
         Context context = getApplicationContext();
-        int duration = Toast.LENGTH_LONG;
+        try {
+            int duration = Snackbar.LENGTH_LONG;
 
-        Toast toast = Toast.makeText(context, message, duration);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
+            CoordinatorLayout coordinatorLayout = new CoordinatorLayout(context);
+            Snackbar snackbar = Snackbar.make(coordinatorLayout, message, duration);
+            snackbar.show();
+        } catch (Exception e) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
+        }
 
-        toast.show();
     }
 
     private void screenTest() {
@@ -100,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 JsonInfoUtils.smallScreen(false);
                 break;
             default:
+                JsonInfoUtils.smallScreen(true);
                 toastMessage("This Screen size wasn't accounted for");
         }
     }

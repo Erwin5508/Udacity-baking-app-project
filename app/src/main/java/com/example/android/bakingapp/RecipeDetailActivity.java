@@ -27,7 +27,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         JsonInfoUtils.saveIndex(mIndex);
 
-        if (!JsonInfoUtils.mSmallScreen) {
+        if (!JsonInfoUtils.mSmallScreen && savedInstanceState == null) {
             mI = recipeDetailFragment.mI;
             DetailStepFragment DetailFragment = (DetailStepFragment)getSupportFragmentManager()
                     .findFragmentById(R.id.detail_step_fragment);

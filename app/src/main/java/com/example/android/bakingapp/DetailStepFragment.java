@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ import java.net.MalformedURLException;
 
 public class DetailStepFragment extends Fragment {
 
+    private final String TAG = "DetailStepFragment";
     private ImageView imageView;
     private TextView mStepInstructions;
     private Button mNext;
@@ -140,7 +142,8 @@ public class DetailStepFragment extends Fragment {
         }
 
         // Set things up:
-        mStepInstructions.setText( "\n" + JsonInfoUtils.STEPS_DESCRIPTION[mIndex][mI]);
+        String instructions = "\n" + JsonInfoUtils.STEPS_DESCRIPTION[mIndex][mI];
+        mStepInstructions.setText(instructions);
 
         try {
             if (!JsonInfoUtils.IMAGE_URL[mIndex].equals("")) {
@@ -180,7 +183,6 @@ public class DetailStepFragment extends Fragment {
         }
         if (!mediaUrl.equals("")) {
 
-            if (mPlayerPosition != C.TIME_UNSET) mExoPlayer.seekTo(mPlayerPosition);
             mMediaPlayer.setVisibility(View.VISIBLE);
             try {
                 setFullScreen(getContext());
@@ -194,6 +196,8 @@ public class DetailStepFragment extends Fragment {
             MediaSource mediaSource = new ExtractorMediaSource(Url, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
+
+            mExoPlayer.seekTo(mPlayerPosition);
             mExoPlayer.setPlayWhenReady(playWhenReady);
         } else {
             mMediaPlayer.setVisibility(View.INVISIBLE);
@@ -261,6 +265,16 @@ public class DetailStepFragment extends Fragment {
             playWhenReady = mExoPlayer.getPlayWhenReady();
         }
         releasePlayer();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            initializePlayer(JsonInfoUtils.STEPS_VIDEO_URL[mIndex][mI]);
+        } catch (Exception e) {
+            Log.e(TAG, "Video url malformed");
+        }
     }
 
     @Override

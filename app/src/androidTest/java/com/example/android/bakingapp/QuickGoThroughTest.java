@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -32,7 +33,8 @@ public class QuickGoThroughTest {
 
     @Test
     public void quickGoThroughTest() {
-        ViewInteraction textView = onView(
+        ViewInteraction textView;
+        textView = onView(
                 allOf(withText("Brownies"),
                         childAtPosition(
                                 allOf(withId(R.id.card_grid_view),
@@ -47,13 +49,10 @@ public class QuickGoThroughTest {
             e.printStackTrace();
         }
 
+        ViewInteraction scrollView = onView(withId(R.id.card_grid_view));
+        scrollView.perform(swipeUp());
         ViewInteraction textView2 = onView(
-                allOf(withText("2. Melt butter and bittersweet chocolate."),
-                        childAtPosition(
-                                allOf(withId(R.id.card_grid_view),
-                                        withParent(withId(R.id.recipe_list_fragment))),
-                                3),
-                        isDisplayed()));
+                allOf(withText("2. Melt butter and bittersweet chocolate."), isDisplayed()));
         textView2.perform(click());
 
         try {
