@@ -85,7 +85,7 @@ public class DetailStepFragment extends Fragment {
             try {
                 playWhenReady = savedInstanceState.getBoolean(PLAY_WHEN_READY);
             } catch (Exception e) {
-                // Not saved
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
             }
             setIndex(mIndex, mI);
 
@@ -207,6 +207,7 @@ public class DetailStepFragment extends Fragment {
 
     private void releasePlayer() {
         if (mExoPlayer != null) {
+            Toast.makeText(getContext(), "realesed the player", Toast.LENGTH_LONG).show();
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;

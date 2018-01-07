@@ -29,8 +29,7 @@ public class RecipeDetailFragment extends Fragment
     private Parcelable mListState;
     RecyclerView.LayoutManager mLayoutManager;
 
-    public RecipeDetailFragment() {
-    }
+    public RecipeDetailFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

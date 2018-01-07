@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             Snackbar snackbar = Snackbar.make(coordinatorLayout, message, duration);
             snackbar.show();
         } catch (Exception e) {
-            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG);
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 JsonInfoUtils.smallScreen(true);
                 break;
 
-            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
                 JsonInfoUtils.smallScreen(false);
                 break;
             default:
