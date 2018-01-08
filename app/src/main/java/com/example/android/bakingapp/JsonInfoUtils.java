@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.util.Log;
 
@@ -37,6 +38,7 @@ public class JsonInfoUtils {
 
     public static int mIndex;
     public static boolean mSmallScreen = true;
+    public static boolean mediumLargeScreen = false;
     private static Context mContext;
 
     public static String setUpTheJsonData(String Data, Context context) throws JSONException{
@@ -198,7 +200,25 @@ public class JsonInfoUtils {
         mIndex = index;
     }
 
-    public static void smallScreen(boolean yesno) {
-        mSmallScreen = yesno;
+    public static void smallScreen(int i) {
+        switch (i) {
+            case 0:
+                mSmallScreen = false;
+                break;
+            case 1:
+                mSmallScreen = true;
+                break;
+            case 2:
+                mediumLargeScreen = true;
+                break;
+            default:
+                Log.e("Screen Size Issue", "\n|\nsmallScreen(0>i>2)\n|\n|\n|\n|");
+        }
+    }
+
+    public static boolean getLandscape(Context context) {
+        return mediumLargeScreen && context.getResources()
+                .getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
     }
 }

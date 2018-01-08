@@ -98,14 +98,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch(screenSize) {
 
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                JsonInfoUtils.smallScreen(true);
+                JsonInfoUtils.smallScreen(1);
                 break;
 
             case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                JsonInfoUtils.smallScreen(false);
+                JsonInfoUtils.smallScreen(2);
+                break;
+
+            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                JsonInfoUtils.smallScreen(0);
                 break;
             default:
-                JsonInfoUtils.smallScreen(true);
+                JsonInfoUtils.smallScreen(1);
                 toastMessage("This Screen size wasn't accounted for");
         }
     }

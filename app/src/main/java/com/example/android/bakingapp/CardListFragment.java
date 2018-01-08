@@ -34,7 +34,7 @@ CardListAdapter.CardListAdapterOnClickHandler{
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
         mProgressBar.setVisibility(View.VISIBLE);
 
-        if (!JsonInfoUtils.mSmallScreen) {
+        if (!JsonInfoUtils.mSmallScreen || JsonInfoUtils.getLandscape(getContext())) {
             gridView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         } else {
             gridView.setLayoutManager(new GridLayoutManager(getContext(), 1));

@@ -60,7 +60,7 @@ public class RecipeDetailFragment extends Fragment
     public void onClick(int index, int i) {
         if (i == -1) return;
         mI = i;
-        if (!JsonInfoUtils.mSmallScreen) {
+        if (!JsonInfoUtils.mSmallScreen || JsonInfoUtils.getLandscape(getContext())) {
             try {
                 EventBus.getDefault().post(new IndexingEvent(i, index));
             } catch (Exception e) {

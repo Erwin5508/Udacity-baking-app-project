@@ -15,7 +15,7 @@ public class DetailStepActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
 
-            if (JsonInfoUtils.mSmallScreen) {
+            if (JsonInfoUtils.mSmallScreen || !JsonInfoUtils.getLandscape(getApplicationContext())) {
                 Bundle extra = getIntent().getExtras();
                 mIndex = extra.getInt("index");
                 mI = extra.getInt("i");
