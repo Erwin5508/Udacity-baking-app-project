@@ -44,6 +44,11 @@ public class RecipeDetailFragment extends Fragment
         mLayoutManager = (new LinearLayoutManager(getContext()));
         if(savedInstanceState != null)
             mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+        if (!JsonInfoUtils.mSmallScreen || JsonInfoUtils.getLandscape(getContext())) {
+            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams
+                    (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mLayoutManager.generateLayoutParams(params);
+        }
         gridView.setLayoutManager(mLayoutManager);
         mAdapter = new RecipeDetailAdapter(getContext(), this);
         gridView.setAdapter(mAdapter);

@@ -82,6 +82,7 @@ public class DetailStepFragment extends Fragment {
             mPlayerPosition = savedInstanceState.getLong(PLAYER_SATE);
             mI = savedInstanceState.getInt("i");
             mIndex = savedInstanceState.getInt("index");
+
             try {
                 playWhenReady = savedInstanceState.getBoolean(PLAY_WHEN_READY);
             } catch (Exception e) {
@@ -160,6 +161,7 @@ public class DetailStepFragment extends Fragment {
                 imageView.setVisibility(View.GONE);
             }
 
+            releasePlayer();
             initializePlayer(JsonInfoUtils.STEPS_VIDEO_URL[mIndex][mI]);
 
         } catch (Exception e) {
@@ -175,6 +177,7 @@ public class DetailStepFragment extends Fragment {
 
         if (mExoPlayer == null) {
 
+            Toast.makeText(getContext(), "Exo player was null", Toast.LENGTH_SHORT);
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
 
@@ -199,15 +202,14 @@ public class DetailStepFragment extends Fragment {
 
             mExoPlayer.seekTo(mPlayerPosition);
             mExoPlayer.setPlayWhenReady(playWhenReady);
+            Toast.makeText(getContext(), "Playing when ready", Toast.LENGTH_SHORT);
         } else {
             mMediaPlayer.setVisibility(View.INVISIBLE);
-            Toast.makeText(getContext(), "No video", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void releasePlayer() {
         if (mExoPlayer != null) {
-            Toast.makeText(getContext(), "realesed the player", Toast.LENGTH_LONG).show();
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
