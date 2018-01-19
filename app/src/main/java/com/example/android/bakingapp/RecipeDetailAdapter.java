@@ -32,6 +32,7 @@ public class RecipeDetailAdapter extends RecyclerView.Adapter<RecipeDetailAdapte
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
+
         return new RecipeDetailAdapter.CardListViewHolder(view);
     }
 
@@ -77,6 +78,7 @@ public class RecipeDetailAdapter extends RecyclerView.Adapter<RecipeDetailAdapte
             textView.setTextSize(20);
             textView.setAllCaps(false);
             textView.setOnClickListener(this);
+
         }
 
         @Override
